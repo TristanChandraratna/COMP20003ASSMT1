@@ -1,0 +1,2 @@
+#define MAXFIELDSIZE 256
+#define NOOFCOLUMNS 18

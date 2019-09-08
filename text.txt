@@ -1,0 +1,1 @@
+2018-01-01 -->VendorID: 2 || passenger count: 3 || trip distance: 4 || ratecode ID: 5 || store and forward flag: F || pick-up location ID: 6 || drop-off location ID: 7 || payment type: 8 || fare amount: 9 || extra: 1 || mta tax: 2 || tip amount: 3 || tolls amount: 4 || improvement surcharge: 5 || total amount: 6 || DOdatetime: 2019-01-01 || trip duration: 9
