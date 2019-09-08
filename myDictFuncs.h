@@ -50,7 +50,6 @@ int date_comparator(char Time1[], char Time2[]){
     //returns 0 if Time2 is < Time1
     //returns 1 if Time2 is > Time1
     //returns 2 if Time2 == Time1
-    
     int T1Year = create_substring_int(Time1, 0, 4);
     int T1Month = create_substring_int(Time1, 5, 2);
     int T1Day = create_substring_int(Time1, 8, 2);
@@ -76,6 +75,7 @@ int date_comparator(char Time1[], char Time2[]){
     else{
         return 0;
     }
+    
     return 1;
 }
 void print_tree(BST_t *parent, int counter){
@@ -200,7 +200,6 @@ void linked_list_add_end(LinkedList_t *list, Trip_t *trip) {
     
 }
 BST_t *bst_insert(BST_t *parent, Trip_t *trip){
-    
     if(parent == 0){
         parent = new_BST();
         linked_list_add_end(parent->data, trip);
@@ -231,7 +230,7 @@ void read_csv(char *filename, BST_t *Dict){
 	file = fopen(filename, "r+");
     
     char buffer[MAXFIELDSIZE];
-    fgets(buffer, MAXFIELDSIZE, file);
+    //fgets(buffer, MAXFIELDSIZE, file);
     
     char PUDateTimeID[MAXFIELDSIZE], DODateTimeID[MAXFIELDSIZE], 
         VendorID[MAXFIELDSIZE], passengerCount[MAXFIELDSIZE], 

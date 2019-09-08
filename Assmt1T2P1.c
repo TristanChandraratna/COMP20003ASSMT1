@@ -77,6 +77,7 @@ int search_BST(BST_t *parent, char key[], int counter, char *outFilename){
     else{
         print_LinkedList(parent->data, outFilename);
     }
+    
     return counter;
 }
 void search_controller(char *outFilename, BST_t *Dict){
