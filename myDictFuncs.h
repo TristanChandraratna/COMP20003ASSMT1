@@ -1,5 +1,4 @@
 void empty_string(char str[], int size);
-int create_substring_int(char str[], int startingPos, int noOfLtrs);
 int date_comparator(char Time1[], char Time2[]);
 void print_tree(BST_t *parent, int counter);
 
@@ -33,18 +32,12 @@ void empty_string(char str[], int size){
         str[i] = '\0';
     }
 }
-int create_substring_int(char str[], int startingPos, int noOfLtrs){
-    char *tmp = malloc(sizeof(char *) * noOfLtrs);
-    for(int i = 0; i < noOfLtrs; i++){
-        tmp[i] = str[startingPos + i];
-    }
-    
-    int intTmp = atoi(tmp);
-    free(tmp);
-    
-    return intTmp;
-}
 int date_comparator(char Time1[], char Time2[]){
+    /* This function compares two dates given in any number format */
+    /* If the dates are shown to be the same value, 2 is returned  */
+    /* If the first date is smaller than the second, 1 is returned */
+    /* If the first date is larger than the second, 0 is returned  */
+    
     if(strcmp(Time1,Time2) == 0){
         return 2;
     }
@@ -54,10 +47,11 @@ int date_comparator(char Time1[], char Time2[]){
     else{
         return 0;
     }
-    
-    return 1;
 }
 void print_tree(BST_t *parent, int counter){
+    /* This function, used heavily for debugging prints out the binary search*/
+    /*   tree as well as what level the node is on within the tree           */
+    
     printf("%d %s\n",counter, parent->data->head->PUDateTimeID);
     
     if(parent->left != 0){
@@ -103,6 +97,8 @@ void edit_Trip(Trip_t *trip, char PUDateTimeID[], char VendorID[],
             char improvementSurcharge[], char totalAmount[], 
             char DODateTimeID[], char tripDuration[]){
     
+    /* copies all data read in byu the csv into the Trip_t data struct */
+    
     strcpy(trip->PUDateTimeID, PUDateTimeID); 
     strcpy(trip->VendorID, VendorID);
     strcpy(trip->passengerCount, passengerCount);
@@ -121,10 +117,10 @@ void edit_Trip(Trip_t *trip, char PUDateTimeID[], char VendorID[],
     strcpy(trip->totalAmount, totalAmount);
     strcpy(trip->DODateTimeID, DODateTimeID);
     strcpy(trip->tripDuration, tripDuration);
-    
-    
 }
 Trip_t *copy_Trip(Trip_t *trip){
+    /* Duplicates the all trips into a node stored in each linked list*/
+    
     Trip_t *newTrip = new_trip();
     
     strcpy(newTrip->PUDateTimeID, trip->PUDateTimeID); 
@@ -148,12 +144,12 @@ Trip_t *copy_Trip(Trip_t *trip){
     
     return newTrip;
 }
-// From list.c given in Foundations of Algorithims
-// remove and return the front data element from a list
-// this operation is O(1)
-// error if the list is empty (so first ensure list_size() > 0)
+
+/* From list.c given in Foundations of Algorithims              */
+/* remove and return the front data element from a list         */
+/* this operation is O(1)                                       */
+/* error if the list is empty (so first ensure list_size() > 0) */
 void linked_list_add_end(LinkedList_t *list, Trip_t *trip) {
-    
 	assert(list != NULL);
 
 	// we'll need a new list node to store this data
@@ -173,11 +169,13 @@ void linked_list_add_end(LinkedList_t *list, Trip_t *trip) {
 
 	// and keep size updated too
 	list->size++;
-    
-    
 }
 
 void read_csv(char *filename, BST_t *Dict){
+    /* converts all data stored in the csv files into Trip_t formats and */
+    /* then inserted into the unsorted binary search tree (BST)          */
+    
+    /* opens the csv file and make sure it is opend successfully         */
 	FILE *file;
 	file = fopen(filename, "r+");
     assert(file != NULL);
@@ -185,6 +183,8 @@ void read_csv(char *filename, BST_t *Dict){
     char buffer[MAXFIELDSIZE];
     fgets(buffer, MAXFIELDSIZE, file);
     
+    /* initialise all tempary string variables to read in from the csv file */
+    /*   and input into the BST                                             */
     char PUDateTimeID[MAXFIELDSIZE], DODateTimeID[MAXFIELDSIZE], 
         VendorID[MAXFIELDSIZE], passengerCount[MAXFIELDSIZE], 
         RatecodeID[MAXFIELDSIZE], storeAndFwdFlag[MAXFIELDSIZE], 
@@ -214,6 +214,8 @@ void read_csv(char *filename, BST_t *Dict){
     empty_string(totalAmount, MAXFIELDSIZE);
     empty_string(tripDuration, MAXFIELDSIZE);
     
+    /* runs through each line of the CSV file, converting them into */
+    /*    the the Trip_t data type and then inserted into the BST   */ 
 	while (fscanf(file, "%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,^\n]",
                 VendorID, passengerCount, tripDistance, 
                 RatecodeID, storeAndFwdFlag, PULocID, DOLocID, 
@@ -222,6 +224,7 @@ void read_csv(char *filename, BST_t *Dict){
                 totalAmount, PUDateTimeID, DODateTimeID, 
                 tripDuration) == NOOFCOLUMNS){
         
+        /* initialise the Trip_t */
         Trip_t *trip = new_trip();
         if (VendorID[0] == '\n'){
             memmove(VendorID, VendorID+1, strlen(VendorID));
@@ -232,25 +235,20 @@ void read_csv(char *filename, BST_t *Dict){
                   DOLocID, paymentTypeID, fareAmount, extras,  MTATax,
                   tipAmount, tollsAmount, improvementSurcharge,
                   totalAmount, DODateTimeID, tripDuration);
-
+        
+        /* insert into the BST */
         bst_insert(Dict, trip);
         
+        /* frees the Trip_t pointer */
         free(trip);
-        
-        for(int i = 0; i < 0;i++){
-            fscanf(file, "%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,^\n]",
-                VendorID, passengerCount, tripDistance, 
-                RatecodeID, storeAndFwdFlag, PULocID, DOLocID, 
-                paymentTypeID, fareAmount, extras, MTATax, 
-                tipAmount, tollsAmount, improvementSurcharge, 
-                totalAmount, PUDateTimeID, DODateTimeID, 
-                tripDuration);
-        }
     }
     
     fclose(file);
 }
 void read_line_inp(char inp[], BST_t *Dict){
+    /* unsure if required but is commented out in both parts */
+    /* If the csv data is entered into the command line      */
+    /*   where the data file is entered.                     */
     Trip_t trip = *new_trip();
     edit_Trip(&trip, 
               strtok(inp, ","), 
@@ -295,7 +293,8 @@ void free_tree(BST_t *parent){
     if(! parent){
         return;
     }
-    /* Fill in function according to function description. */
+    /* iterates over each child iteratively freeing each node's children */
+    /*    before freeing the node itself                                 */
     if(parent->right != 0){
         free_tree(parent->right);
     }
@@ -303,6 +302,7 @@ void free_tree(BST_t *parent){
         free_tree(parent->left);
     }
     
+    /* frees the list stored in each node before freeing the node itself */
     free_list(parent->data);
     free(parent);
 }
