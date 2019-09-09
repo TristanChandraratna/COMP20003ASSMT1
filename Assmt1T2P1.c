@@ -16,6 +16,34 @@ void search_controller(char *outFilename, BST_t *Dict);
 /*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*/
 
+BST_t *bst_insert(BST_t *parent, Trip_t *trip){
+    if(parent == 0){
+        parent = new_BST();
+        linked_list_add_end(parent->data, trip);
+    }
+    else if(parent->data->size == 0){
+        linked_list_add_end(parent->data, trip);
+    }
+    else{
+        if(date_comparator(parent->data->head->PUDateTimeID,
+                           trip->PUDateTimeID) == 0){
+            parent->left = bst_insert(parent->left, trip);
+        }
+        else if(date_comparator(parent->data->head->PUDateTimeID,
+                                trip->PUDateTimeID) == 1){
+            parent->right = bst_insert(parent->right, trip);
+        }
+        else{
+            linked_list_add_end(parent->data, trip);
+        }
+    }
+    
+    //Enter here to balance
+    
+    
+    return parent;
+}
+
 void print_Trip(Trip_t *trip, char *outFilename){
     FILE *file;
     file = fopen(outFilename, "a");
@@ -81,6 +109,7 @@ int search_BST(BST_t *parent, char key[], int counter, char *outFilename){
     return counter;
 }
 void search_controller(char *outFilename, BST_t *Dict){
+    //clear output file
     FILE *file;
     file = fopen(outFilename, "w");
     fclose(file);
@@ -88,10 +117,20 @@ void search_controller(char *outFilename, BST_t *Dict){
     char key[MAXFIELDSIZE];
     empty_string(key, MAXFIELDSIZE);
     
-    while (scanf("%s",
-                key) == 1){
+    int i = 0, c;
+    while (((c = getchar()) != EOF)) {
+		if ((c != '\n') && (c != '\r')) {
+			key[i++] = c;
+		} 
+        else {
+            int counter = search_BST(Dict, key, 1, outFilename);
+            printf("%s --> %d\n", key, counter);
+			empty_string(key, MAXFIELDSIZE);
+            i = 0;
+		}
+	}if(c == EOF){
         int counter = search_BST(Dict, key, 1, outFilename);
-        printf("%s --> %d\n", key, counter);
+        printf("%s --> %d\n", key, counter);   
     }
 }
 

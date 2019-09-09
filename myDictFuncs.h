@@ -7,8 +7,6 @@ Trip_t *new_trip();
 LinkedList_t *new_LinkedList();
 BST_t *new_BST();
 
-
-/* VendorID	tpep_pickup_datetime	tpep_dropoff_datetime	passenger_count	trip_distance	RatecodeID	store_and_fwd_flag	PULocationID	DOLocationID	payment_type	fare_amount	extra	mta_tax	tip_amount	tolls_amount	improvement_surcharge	total_amount	congestion_surcharge*/
 void edit_Trip(Trip_t *trip, char VendorID[], char PUDateTimeID[], char DODateTimeID[], char passengerCount[], char tripDistance[], char RatecodeID[], 
             char storeAndFwdFlag[], char PULocID[], char DOLocID[], 
             char paymentTypeID[], char fareAmount[], char extras[], 
@@ -46,30 +44,11 @@ int create_substring_int(char str[], int startingPos, int noOfLtrs){
     
     return intTmp;
 }
-int date_comparator(char Time1[], char Time2[]){ 
-    //returns 0 if Time2 is < Time1
-    //returns 1 if Time2 is > Time1
-    //returns 2 if Time2 == Time1
-    int T1Year = create_substring_int(Time1, 0, 4);
-    int T1Month = create_substring_int(Time1, 5, 2);
-    int T1Day = create_substring_int(Time1, 8, 2);
-    int T1Hour = create_substring_int(Time1, 11, 2);
-    int T1Min = create_substring_int(Time1, 14, 2);
-    int T1Sec = create_substring_int(Time1, 17, 2);
-    
-    int T2Year = create_substring_int(Time2, 0, 4);
-    int T2Month = create_substring_int(Time2, 5, 2);
-    int T2Day = create_substring_int(Time2, 8, 2);
-    int T2Hour = create_substring_int(Time2, 11, 2);
-    int T2Min = create_substring_int(Time2, 14, 2);
-    int T2Sec = create_substring_int(Time2, 17, 2);
-    
-    if((T1Year == T2Year)&&(T1Month == T2Month)&&(T1Day == T2Day)
-            &&(T1Hour == T2Hour)&&(T1Min == T2Min)&&(T1Sec == T2Sec)){
+int date_comparator(char Time1[], char Time2[]){
+    if(strcmp(Time1,Time2) == 0){
         return 2;
     }
-    else if((T1Year < T2Year)&&(T1Month < T2Month)&&(T1Day < T2Day)
-            &&(T1Hour < T2Hour)&&(T1Min < T2Min)&&(T1Sec < T2Sec)){
+    else if(strcmp(Time1,Time2) < 0){
         return 1;
     }
     else{
@@ -167,8 +146,6 @@ Trip_t *copy_Trip(Trip_t *trip){
     strcpy(newTrip->DODateTimeID, trip->DODateTimeID);
     strcpy(newTrip->tripDuration, trip->tripDuration);
     
-    //free(trip);
-    
     return newTrip;
 }
 // From list.c given in Foundations of Algorithims
@@ -199,38 +176,14 @@ void linked_list_add_end(LinkedList_t *list, Trip_t *trip) {
     
     
 }
-BST_t *bst_insert(BST_t *parent, Trip_t *trip){
-    if(parent == 0){
-        parent = new_BST();
-        linked_list_add_end(parent->data, trip);
-    }
-    else if(parent->data->size == 0){
-        linked_list_add_end(parent->data, trip);
-    }
-    else{
-        if(date_comparator(parent->data->head->PUDateTimeID,
-                           trip->PUDateTimeID) == 0){
-            parent->left = bst_insert(parent->left, trip);
-        }
-        else if(date_comparator(parent->data->head->PUDateTimeID,
-                                trip->PUDateTimeID) == 1){
-            parent->right = bst_insert(parent->right, trip);
-        }
-        else{
-            linked_list_add_end(parent->data, trip);
-        }
-    }
-    
-    //Enter here to balance
-    return parent;
-}
 
 void read_csv(char *filename, BST_t *Dict){
 	FILE *file;
 	file = fopen(filename, "r+");
+    assert(file != NULL);
     
     char buffer[MAXFIELDSIZE];
-    //fgets(buffer, MAXFIELDSIZE, file);
+    fgets(buffer, MAXFIELDSIZE, file);
     
     char PUDateTimeID[MAXFIELDSIZE], DODateTimeID[MAXFIELDSIZE], 
         VendorID[MAXFIELDSIZE], passengerCount[MAXFIELDSIZE], 
@@ -269,8 +222,6 @@ void read_csv(char *filename, BST_t *Dict){
                 totalAmount, PUDateTimeID, DODateTimeID, 
                 tripDuration) == NOOFCOLUMNS){
         
-        
-        
         Trip_t *trip = new_trip();
         if (VendorID[0] == '\n'){
             memmove(VendorID, VendorID+1, strlen(VendorID));
@@ -285,6 +236,16 @@ void read_csv(char *filename, BST_t *Dict){
         bst_insert(Dict, trip);
         
         free(trip);
+        
+        for(int i = 0; i < 0;i++){
+            fscanf(file, "%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,^\n]",
+                VendorID, passengerCount, tripDistance, 
+                RatecodeID, storeAndFwdFlag, PULocID, DOLocID, 
+                paymentTypeID, fareAmount, extras, MTATax, 
+                tipAmount, tollsAmount, improvementSurcharge, 
+                totalAmount, PUDateTimeID, DODateTimeID, 
+                tripDuration);
+        }
     }
     
     fclose(file);

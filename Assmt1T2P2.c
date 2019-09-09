@@ -8,6 +8,7 @@
 #include "myDictFuncs.h"   //And this is the final one
 
 int PULoc_comparator(char Loc1Str[], char Loc2Str[]);
+void swap(Trip_t *a, Trip_t *b);
 
 void print_Trip(Trip_t *trip, char *outFilename);
 int search_BST(BST_t *parent, char key[], int counter, char *outFilename);
@@ -35,14 +36,76 @@ int PULoc_comparator(char Loc1Str[], char Loc2Str[]){
         return 0;
     }
 }
-
-void print_Trip(Trip_t *trip, char *outFilename){
-    printf("%s --> ", trip->PULocID);
-    printf("%s", trip->PUDateTimeID);
-    printf("\n");
+BST_t *bst_insert(BST_t *parent, Trip_t *trip){
+    if(parent == 0){
+        parent = new_BST();
+        linked_list_add_end(parent->data, trip);
+    }
+    else if(parent->data->size == 0){
+        linked_list_add_end(parent->data, trip);
+    }
+    else{
+        if(PULoc_comparator(parent->data->head->PULocID,
+                           trip->PULocID) == 0){
+            parent->left = bst_insert(parent->left, trip);
+        }
+        else if(PULoc_comparator(parent->data->head->PULocID,
+                                trip->PULocID) == 1){
+            parent->right = bst_insert(parent->right, trip);
+        }
+        else{
+            linked_list_add_end(parent->data, trip);
+        }
+    }
+    
+    //Enter here to balance
+    
+    
+    return parent;
 }
+void print_Trip(Trip_t *trip, char *outFilename){
+    FILE *file;
+    file = fopen(outFilename, "a");
+    
+    fprintf(file, "%s --> ", trip->PULocID);
+    fprintf(file, "%s", trip->PUDateTimeID);
+    fprintf(file, "\n");
+    
+    fclose(file);
+    
+}
+/* From Foundations of Algorithms */
+void bubbleSort(Trip_t *start){ 
+    int swapped, i; 
+    Trip_t *ptr1; 
+    Trip_t *lptr = NULL; 
+    
+    if (start == NULL){
+        return; 
+    }
+  
+    do{ 
+        swapped = 0; 
+        ptr1 = start; 
+  
+        while (ptr1->next != lptr){ 
+            if (date_comparator(ptr1->PUDateTimeID,ptr1->next->PUDateTimeID) == 0){  
+                swap(ptr1, ptr1->next); 
+                swapped = 1; 
+            } 
+            ptr1 = ptr1->next; 
+        } 
+        lptr = ptr1; 
+    }while (swapped); 
+} 
+void swap(Trip_t *a, Trip_t *b){ 
+    Trip_t *temp = a; 
+    a = b; 
+    b = temp; 
+} 
 void print_LinkedList(LinkedList_t *list, char *outFilename){
     assert(list != NULL);
+    bubbleSort(list->head);
 	// free each node
 	Trip_t *node = list->head;
 	Trip_t *next;
@@ -54,7 +117,12 @@ void print_LinkedList(LinkedList_t *list, char *outFilename){
 }
 int search_BST(BST_t *parent, char key[], int counter, char *outFilename){
     if(parent == NULL){
-        printf("NOT FOUND\n");
+        FILE *file;
+        file = fopen(outFilename, "a");
+        
+        fprintf(file, "NOT FOUND\n");
+        
+        fclose(file);
         return counter;
     }
     if(PULoc_comparator(parent->data->head->PULocID,
@@ -83,8 +151,6 @@ void search_controller(char *outFilename, BST_t *Dict){
         int counter = search_BST(Dict, key, 0, outFilename);
         printf("%s --> %d\n", key, counter);
     }
-    
-    
 }
 
 int main(int argc, char **argv){
@@ -107,7 +173,7 @@ int main(int argc, char **argv){
         
         
         //free the tree
-        //free_tree(Dict);
+        free_tree(Dict);
 	}
     else{
         printf("%d arguments were inputed. At least 3 are required\n", argc);
